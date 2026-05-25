@@ -8,26 +8,18 @@ def load_data():
     df = pd.read_csv(data_path)
     
     # Filter only men
-    men_df = df[df["Sex"] == "male"]
+    men_df = df[df["sex"] == "male"]
     
     return men_df
 
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Clean a DataFrame by dropping missing values and normalizing categorical columns.
-
-    Parameters:
-        df (pd.DataFrame): Input DataFrame to clean.
-
-    Returns:
-        pd.DataFrame: Cleaned DataFrame with no missing values and lowercase categorical columns.
+def clean_data(df: pd.DataFrame, dropna_subset: list | None = None) -> pd.DataFrame:
     """
-    cleaned = df.dropna()
-    
+    Drops rows with missing values (optionally only for subset columns),
+    lowercases all object/category columns, and returns the cleaned DataFrame.
+    """
+    cleaned = df.dropna(subset=dropna_subset).copy()
     categorical_columns = cleaned.select_dtypes(include=["object", "category"]).columns
-    for column in categorical_columns:
-        cleaned[column] = cleaned[column].astype(str).str.lower()
-    
+    for col in categorical_columns:
+        cleaned[col] = cleaned[col].astype(str).str.lower()
     return cleaned
-
-
